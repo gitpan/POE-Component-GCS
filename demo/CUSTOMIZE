@@ -1,0 +1,107 @@
+
+#-----------------------------------------------------------------------
+# CUSTOMIZE: Customizing the Generic Client/Server application
+#-----------------------------------------------------------------------
+
+Once you decide to install the GCS classes, you will want to start 
+adding your own commands, tasks and processes. This document provides
+several categories of suggestions that you may want to consider.
+
+
+Architectural Considerations
+----------------------------
+
+If you ran the GCS server process and the GCS client command you 
+may have noticed that no changes were necessary for the scripts
+to run. These classes use the PTools Global and Local classes
+which allow for completely relocatable scripts.
+
+You can now relocate the top-level "demo" directory and all 
+of the subdirectores anywhere. As long as the subdirectories
+remain in the same relative position everything will still
+work as expected. The top-level directory can be renamed as
+desired, but do not change any of the subdirectory names.
+
+If you ran the demo scripts, you created a "lib" symlink in this
+"demo" subdirectory as mentioned in the accompanying "README" file. 
+If you remove the symlink and replace it with a "lib" subdirectory,
+this newly created "lib" subdir can now be used to hold copies of 
+any GCS class that you want to modify. When you run the client and 
+server scripts, your classes will be found/used before the original
+GCS classes (which are now assumed to be installed in one of the
+"site_perl" or "vendor_perl" or equivalent library subdirectories 
+within your Perl installation, depending on your version of Perl).
+
+
+Subclassing the GCS modules
+---------------------------
+
+By design the "Generic Client/Server" classes are, well, generic!
+It is possible to override any of the various GCS classes by
+creating your own custom subclasses. When doing this, you can
+place your new classes in the newly created "lib" subdir.
+However, wherever you locate your custom subclasses, make sure
+to update the server's "conf/gcs/config.dat" file to include
+your new subclass names. Otherwise, the server will not load
+your classes during startup.
+
+See the "LogDemo" entry in the "conf/gcs/config.dat" file as
+a config example. See the "POE::Component::GCS::Server::LogDemo"
+class for a simple example of modifying the log date format.
+
+
+Adding New Commands
+-------------------
+
+The GCS server uses a synchronous command dispatch mechanism. This 
+is used by internal server events as well as commands passed from 
+various client scripts.
+
+See two "HINT" sections in the "POE::Component::GCS::Server::Cmd"
+class for specifics of creating additional commands.
+
+
+Adding New Background Processes
+-------------------------------
+
+The GCS server handles long-running processes as child processes
+which allows for multiple asychronous jobs without blocking the 
+server process.
+
+See the "HINT" section in the "POE::Component::GCS::Server::Proc"
+class for specifics of creating custom background processes.
+
+
+Adding New Foreground Tasks
+---------------------------
+
+The GCS server handles short-term tasks within the main server
+process using POE event processing and message objects. These
+should be quick to respond to a waiting client connection.
+However, they can still make use of the GCS "background process"
+mechanism if/when some needed functionality is defined there. In 
+this way duplicate functions need not be maintained for foreground 
+and background processing.
+
+As more foreground tasks are added, situations may arise where
+some finite resource(s) should be monitored. In this case an
+alarm based event can be used to trigger a "housekeeping cycle"
+to monitor resource states. One nice way to handle this type of
+event processing is to have a self-throttling monitor. If, for
+example, NONE of a monitored resource is "in use", the monitor 
+might only cycle once each hour to do various low priority tasks.
+
+Then, when LESS than 50% of the monitored resource is "in use", 
+the monitor might throttle itself up to cycle every 5 or 10
+minutes and, when MORE than 50% of the resource is "in use",
+might throttle up further to cycle every 15 or 20 seconds. Then,
+as resource(s) become available, the monitor can throttle itself 
+back down to slower speeds reducing the daemon's system overhead.
+
+
+Adding New Configuration File Entries
+-------------------------------------
+
+ ... ToDo ...
+
+#-----------------------------------------------------------------------

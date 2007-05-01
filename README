@@ -1,0 +1,50 @@
+
+POE-Component-GCS
+=================
+
+This package is titled a "Generic network server model" and is based on
+the abstraction of a pattern I call "Server / Controller / Subprpocess".
+This is a very useful pattern that consists of these components:
+   a network server interface,
+   a process manager to queue/schedule/run processes, and
+   a set of child processes that asynchronously 
+     perform long-running tasks
+
+Add to that a command-driven interface, and a piece that can run
+quick "housekeeping type" tasks without having to start a child, 
+and this becomes the starting point for a lot of possibilities.
+
+While this is based on an abstraction of a pattern, it contains 
+a completely usable and functional configuration. See the 'demo'
+subdirectory and the README therein for a quickstart example and
+some hints for extending this package in various ways.
+
+
+INSTALLATION
+
+To install this package type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This package requires these additional CPAN distributions:
+
+   Date-Time
+   IO-Socket
+   POE
+   POE-Event-Message
+   PTools
+   Time-Hires
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2006-2007 by Chris Cobb
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
+at your option, any later version of Perl 5 you may have available.
+

@@ -1,0 +1,23 @@
+# http://module-build.sourceforge.net/META-spec.html
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name: POE-Component-GCS
+version: 0.03
+author:
+  - 'Chris Cobb [no dot spam at ccobb dot net]
+abstract: A generic network server model
+license: perl
+requires:
+    Date::Format:                  2.22
+    IO::Socket:                    0
+    POE:                           0
+    POE::Event::Message:           0.10
+    POSIX:                         0
+    PTools::Local:                 0
+    strict:                        0
+    Test::More:                    0
+    Time::HiRes:                   0
+    warnings:                      0
+no_index:
+  directory:
+    - inc
+    - t

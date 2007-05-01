@@ -1,0 +1,100 @@
+
+#-----------------------------------------------------------------------
+# README: Getting started with the Generic Client/Server daemon
+#-----------------------------------------------------------------------
+
+You can run a demo server right from this temporary distribution area.
+
+o  On systems that allow symbolic file links, create one symlink 
+   in the 'demo' subdirectory where this README resides.
+     
+      ln -s ../lib lib
+
+   On all other systems you must create a copy of the entire lib
+   subdirectory under this 'demo' directory.
+
+      cp -r ../lib .          # or whatever file copy you use
+
+o  Start the GCS server daemon process. To skip the 'session
+   detach' step of the daemon and watch connections on your
+   terminal, run the server with the "-D" switch (--Debug).
+
+      bin/gcsServer.pl  -D       # to skip session detach 
+
+      bin/gcsServer.pl           # to run as a daemon process
+
+      bin/gcsServer.pl  -h       # to see available options
+
+o  No edits to the configuration file should be necessary. But,
+   after the server tries to start, if you see an indication that
+   there is a port number conflict, edit the following file.
+
+      conf/gcs/gcs.conf
+
+   When necessary, change the 'TxtPort' setting to another value
+   (if, for example, an existing process already uses the port).
+
+      Setting     Example
+      ---------   ----------------------
+      TxtPort     23457
+
+o  Try connecting to the GCS server using the client script.
+
+      bin/gcsClient.pl  ping
+
+   If you see the word 'pong', then it's working! Send the
+   server a 'help' command to see the list of client commands
+   that are currently available.
+
+      bin/gcsClient.pl  help        # server command list
+
+o  If you ran the GCS server as a daemon, you can gracefully
+   shutdown the server using the 'gcsServer.pl' script.
+
+      gcsServer.pl -shutdown
+
+   Otherwise, if you used the "-D" switch, simply type Ctrl-\
+   to shutdown the the server. (That's Ctrl plus a 'backslash' 
+   character. Since this server traps various signals, typing
+   Ctrl-C won't work as expected here.) 
+
+o  If you decide to install the GCS classes and then want to
+   start adding your custom commands, see the CUSTOMIZE document
+   located in this "demo" subdirectory for some suggestions.
+
+#-----------------------------------------------------------------------
+
+o  By default, the demo client uses plain text to communicate
+   with the demo server. To communicate using message objects,
+   make the following changes.
+
+   Edit config file  '../conf/gcs.conf'. (Note that both the
+   TxtPort and MsgPort can be used simultaneously. Just be
+   sure to have a 'Message-based' client talk to the 'MsgPort'
+   and a 'Text-based' client talk to the 'TxtPort'.)
+
+      Setting     Example
+      ---------   ----------------------
+      MsgPort     23456
+
+   Edit client script 'gcsClient.pl' and make this changes.
+
+      uncomment the 'Message-based' use line
+
+      comment out the 'Text-based' use line
+
+
+o  Stop and restart the demo server
+
+      bin/gcsServer.pl  -D 5
+
+o  Rerun the client script
+
+      bin/gcsClient.pl  ping
+      bin/gcsClient.pl  help
+
+o  You should see no difference. But, with the Message-based client, 
+   a POE::Component::GCS::Server::Msg (which isa POE::Event::Message)
+   object is used to comunicate witth the server.
+
+#-----------------------------------------------------------------------
