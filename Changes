@@ -1,5 +1,12 @@
 Revision history for Perl extension POE::Component::GCS.
 
+00.04  Mon Feb 22 16:28:42 2010
+	- maintenance release to fix a few things
+	  .  Client.pm:		added "-r" (--raw) option
+	  .  ClientMsg.pm: 	fixed response message handling
+	  .  Server/Cfg.pm:	omit loading server libs w/clients
+	  .  demo/README:	updated notes for running demos
+
 00.03  Sat Apr 28 09:16:33 2007
 	- initial release to CPAN
 

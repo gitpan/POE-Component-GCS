@@ -11,7 +11,7 @@ use strict;
 use warnings;
 
 our $PACK    = __PACKAGE__;
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 ### @ISA     = qw( );
 
 #------------------------------------------------------
@@ -45,7 +45,7 @@ my $LogFile    = "server.log";            # used in Server
 my $PidFile    = "server.pid";            # used in Server
 my $UidFile    = "";  ### uidgid.dat";    # used in Server
 #______________________________________________________
-
+my $CfgClient  = 0;     # skip loading server modules?
 
 sub new
 {   my($class,$cfgFile,@args) = @_;
@@ -59,15 +59,20 @@ sub new
     $self->configFile( $cfgFile );
     $self->configEnv();
     $self->configLibs();
+    #-------------------------------------------------------------------
+    # Skip loading the server modules for clients.
+    $self->loadLibs()    unless $CfgClient;
+    #-------------------------------------------------------------------
     $self->configVars();
 
     return $self;
 }
 
-#sub import
-#{   my($class,$cfgFile,@args) = @_;
-#    $class->new( $cfgFile, @args )  if $cfgFile;
-#}
+sub import
+{   my($class,@args) = @_;
+    $CfgClient = 1 if grep(/client/i, @args);
+    return;
+}
 
 sub set    { $_[0]->{ lc $_[1]}=$_[2]     }
 sub get    { return( $_[0]->{ lc $_[1]} ) }
@@ -99,6 +104,12 @@ sub configLibs
     $self->set('queueclass', $QueueClass) unless $self->get('queueclass');
     $self->set('taskclass',  $TaskClass)  unless $self->get('taskclass');
     $self->set('tcpclass',   $TCPClass)   unless $self->get('tcpclass');
+
+    return;
+}
+
+sub loadLibs
+{   my($self) = @_;
 
     my(@libVars) = qw( msgclass   logclass  cmdclass procclass 
 		       queueclass taskclass tcpclass
@@ -365,17 +376,35 @@ POE::Component::GCS::Server::Cfg - Generic network server config
 
 =head1 VERSION
 
-This document describes version 0.07, released June, 2006.
+This document describes version 0.09, released February, 2010.
 
 =head1 SYNOPSIS
 
-  use POE::Component::GCS::Server::Cfg;
+  # Server usage - used indirecly to configure server during startup
+
+  use POE::Component::GCS::Server;
+  $configFile = "/path/to/GCS/config/file";
   exit( run POE::Component::GCS::Server( $configFile ) );
+
+  # Client usage - used to obtain port number(s) of a running server
+
+  use POE::Component::GCS::Server::Cfg qw( client );   # client flag
+
+  $configClass = "POE::Component::GCS::Server::Cfg";
+  $configFile  = "/path/to/GCS/config/file";
+  $config   = $cfgClass->new( $cfgFile );     # will skip loadLibs()
+  $msgPort  = $config->get('MsgPort');        # '0' when not in use
+  $txtPort  = $config->get('TxtPort');        # '0' when not in use
 
 =head1 DESCRIPTION
 
 This class is used to start a generic network server daemon.
 To cleanly shutdown the server, send a SIGTERM to the process ID.
+
+Client scripts may use this module to obtain the current server 
+port number(s) for running services. However, in this case, add 
+the string 'client' to the 'use' statement, as shown above, to 
+avoid loading all of the additional server classes.
 
 =head2 Constructor
 
@@ -405,7 +434,14 @@ Configure the server Environment Variables.
 
 =item configLibs ( )
 
-Configure (include) the server library modules (components).
+Configure the server library modules (components).
+
+=item loadLibs ( )
+
+Include all of the server library modules (components). This should be
+skipped when using this module in client scripts, for example to obtain 
+the port number(s) of a running server. See the Synopsis section, above, 
+for the correct client syntax.
 
 =item configVars ( )
 
@@ -610,13 +646,15 @@ None currently. An external configuration file is optional.
 
 For discussion of the generic server, see L<POE::Component::GCS::Server>.
 
+For an example of client usage, see L<POE::Component::GCS::Client>.
+
 =head1 AUTHOR
 
 Chris Cobb, E<lt>no spam [at] ccobb [dot] netE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2007 by Chris Cobb. All rights reserved.
+Copyright (c) 2005-2010 by Chris Cobb. All rights reserved.
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 

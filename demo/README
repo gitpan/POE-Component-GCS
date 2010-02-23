@@ -19,11 +19,17 @@ o  Start the GCS server daemon process. To skip the 'session
    detach' step of the daemon and watch connections on your
    terminal, run the server with the "-D" switch (--Debug).
 
-      bin/gcsServer.pl  -D       # to skip session detach 
+   NOTE: If you recieve "bad interpreter" or "file not found" 
+   errors when running the following commands, simply prefix
+   with "perl -T" or change the "#!" line at the top of each 
+   script to include the path to your Perl interpreter.
 
-      bin/gcsServer.pl           # to run as a daemon process
+      bin/gcsServer.pl  -D         # to skip session detach 
+      perl -T bin/gcsServer.pl -D  # if needed to avoid startup errors
 
-      bin/gcsServer.pl  -h       # to see available options
+      bin/gcsServer.pl             # to run as a daemon process
+
+      bin/gcsServer.pl  -h         # to see available options
 
 o  No edits to the configuration file should be necessary. But,
    after the server tries to start, if you see an indication that
@@ -41,12 +47,13 @@ o  No edits to the configuration file should be necessary. But,
 o  Try connecting to the GCS server using the client script.
 
       bin/gcsClient.pl  ping
+      perl -T bin/gcsClient.pl ping   # if needed to avoid Perl errors
 
    If you see the word 'pong', then it's working! Send the
    server a 'help' command to see the list of client commands
    that are currently available.
 
-      bin/gcsClient.pl  help        # server command list
+      bin/gcsClient.pl  help          # server command list
 
 o  If you ran the GCS server as a daemon, you can gracefully
    shutdown the server using the 'gcsServer.pl' script.

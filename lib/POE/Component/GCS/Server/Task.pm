@@ -284,7 +284,7 @@ sub reconfigureServer
     # the "reconfig()" method at the top of the Housekeeping class.
     # THIS method initiates general Server reconfiguration, while
     # THAT method is called by the Config class to reconfigure
-    # this particular TVM module. (Reminds me of the famous old
+    # this particular GCS module. (Reminds me of the famous old
     # "twisty maze of little passages, all different.")
 
     if ( ! $Cfg->configFileModified() ) {
@@ -522,7 +522,7 @@ Chris Cobb, E<lt>no spam [at] ccobb [dot] netE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2007 by Chris Cobb. All rights reserved.
+Copyright (c) 2005-2010 by Chris Cobb. All rights reserved.
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 

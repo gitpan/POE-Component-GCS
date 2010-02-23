@@ -131,7 +131,7 @@ Chris Cobb, E<lt>no spam [at] ccobb [dot] netE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2007 by Chris Cobb. All rights reserved.
+Copyright (c) 2005-2010 by Chris Cobb. All rights reserved.
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 

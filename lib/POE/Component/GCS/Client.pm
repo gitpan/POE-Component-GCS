@@ -26,7 +26,9 @@
 #               cmd  sleep <n>       # access 'Housekeeping' service
 #               cmd  echo <text>     # access 'Control/Maintenance'
 #               cmd  banner <text>   # access 'Control/Maintenance'
-#               cmd  help            # show list of valid commands
+#               cmd  help            # print list of valid SERVER commands
+#               cmd  [{-h | --help}] # print list of valid CLIENT commands
+#               cmd  [{-r | --raw}]  <your added server command>
 #
 
 package POE::Component::GCS::Client;
@@ -35,15 +37,15 @@ use strict;
 use warnings;
 
 our $PACK    = __PACKAGE__;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 our @ISA     = qw( );
 
-use POE::Component::GCS::ClientMsg;       # Message-based client module
-use POE::Component::GCS::ClientTxt;       # Text-based client module
-use POE::Component::GCS::Server::Cfg;     # Server port num config
+### POE::Component::GCS::ClientMsg;       # Message-based client module
+### POE::Component::GCS::ClientTxt;       # Text-based client module
+use POE::Component::GCS::Server::Cfg qw( client );  # Server port nums
 use PTools::Local;                        # Local/global vars, etc.
 
-my $GCSClient;      # client class is determined via 'import' method
+my $GCSClient;  # client class is determined via the 'import' method
 ## $GCSClient = "POE::Component::GCS::ClientMsg";
 ## $GCSClient = "POE::Component::GCS::ClientTxt";
 my $CfgClass  = "POE::Component::GCS::Server::Cfg";
@@ -76,6 +78,7 @@ sub import
 sub send
 {   my($class,@args) = @_;
 
+    my $rawMode;
     if ($ARGV[0] and $ARGV[0] =~ m#(-h|--help)#) {
         my $baseName = PTools::Local->get('basename');
 	warn "\n Usage:  $baseName <args>\n";
@@ -84,15 +87,22 @@ sub send
 	warn "       help   - display synopsis of server commands\n";
 	warn "       <cmd>  - send cmd/arg(s) to server daemon\n\n";
 	exit(0);
+    } elsif ($ARGV[0] and $ARGV[0] =~ m#(-r|--raw)#) {
+	# Allow for a 'raw' mode such that we don't append a 
+	# newline (e.g., when receiving binary message bodies).
+        $rawMode = shift @ARGV;
     }
+    eval "require $GCSClient";
+    $@ and die $@;
 
     my($stat,$response) = $GCSClient->send( "@ARGV", $Host, $Port );
 
     if ($response) {
 	print $response;
-	print "\n" unless $response =~ m#\n$#;
+	if (! $rawMode) {
+	    print "\n" unless $response =~ m#\n$#;
+	}
     }
-
     return( $stat ||0 );
 }
 #_________________________
@@ -128,7 +138,9 @@ Run the small script, created as shown above, using the '-h' (or '--help')
 command line option for usage help. To see a list of valid I<server> 
 commands, run script with the 'help' command.
 
- Usage: gcsClient <your added command here>
+ Usage: gcsClient  -h              # show cmd usage and exit
+        gcsClient  help            # show list of server commands
+        gcsClient [{-r | --raw}] <your added command here>
 
 =head2 Test/Debug Synopsis
 
@@ -137,25 +149,27 @@ commands, run script with the 'help' command.
         gcsClient  echo <text>     # access 'Queue/Proc' service
         gcsClient  banner <text>   # access 'Queue/Proc' service
         gcsClient  myCmd <text>    # example of adding custom cmd
-        gcsClient  help            # show list of server commands
 
  These additional commands can be used to access/test/demo various
- internal components of the TempViewManager server.
+ internal components of the Generic server.
 
 
 =head1 DESCRIPTION
 
 This class is a client interface to the GCS server.
-This is intended to be implemented via a script named 'B<gcsClient>' and 
-used used as a demo of a I<selectable> interface.
+This is intended to be implemented via a script named 'B<gcsClient>' 
+and used as a demo of a I<selectable> interface.
 
-There are currently two different interfaces to the GCS server. A
-B<Text-based> client will use simple text to communicate with the
-server. A B<Message-based> client can be used to pass a Perl
-object with the 'server command' as the message body.
+There are currently two different interfaces to the GCS server. A 
+B<Text-based> client will use simple text to communicate with the 
+server. A B<Message-based> client can be used to send and receive 
+complex Perl data structures. Either may be used for binary data.
+If you create a server command that returns binary data, use the 
+'-r' (or '--raw') option with this client command to prevent 
+appending a trailing newline character to the data.
 
 The Text-based client has better performance under volume usage, 
-while the Message-based client has more flexibility.
+while the Message-based client allows increased flexibility. 
 
 
 =head1 DEPENDENCIES
@@ -178,7 +192,7 @@ Chris Cobb, E<lt>no spam [at] ccobb [dot] netE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2007 by Chris Cobb. All rights reserved.
+Copyright (c) 2007-2010 by Chris Cobb. All rights reserved.
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 

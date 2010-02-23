@@ -53,10 +53,6 @@ Some suggestions for defining an application level logging strategy.
 #            -  "important" server event notices, such as
 #               +  signals received (for "monitored" signals only)
 #               +  this, that, etc...
-#            -  all View Pool state changes
-#            -  "auto-release" View cleanup notices, including
-#               +  "No process" when first noticed
-#               +  "Timeout" message, when View recycled (after delay)
 #            -  command dispatch notices
 #               +  command dispatch requests, with "client id" tag
 #               +  command dispatch that is "ignored" for any reason
@@ -79,7 +75,6 @@ Some suggestions for defining an application level logging strategy.
 #            -  basic task (housekeeping) cycle notices
 #            -  basic queue (control) notices
 #            -  basic proc (maintenance) notices
-#            -  basic View Pool maint notices
 #
 #    6 - 7   third information level adds
 #            -  more server connect/disconnect notices
@@ -87,7 +82,6 @@ Some suggestions for defining an application level logging strategy.
 #            -  more task (housekeeping) cycle notices
 #            -  more queue (control) notices
 #            -  more proc (maintenance) notices
-#            -  more View Pool maint notices
 #
 #    8 - 9   first troubleshooting level adds
 #            - 

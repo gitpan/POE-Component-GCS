@@ -14,9 +14,10 @@ BEGIN {  # Script is relocatable. See http://ccobb.net/ptools/
   my($top,$app)=($1,$2) if ( getcwd() =~ m#^(.*)(?=/)/?(.*)#);
   $ENV{'PTOOLS_TOPDIR'} = $top;  $ENV{'PTOOLS_APPDIR'} = $app;
 } #-----------------------------------------------------------
+use lib "$ENV{'PTOOLS_TOPDIR'}/$ENV{'PTOOLS_APPDIR'}";
 use PTools::Local;          # PTools local/global vars/methods
 
-# Note: Using a config file is optional
+# Note: Using a config file is required to start the server.
 #
 my $configFile = PTools::Local->path('app_cfgdir', "gcs/gcs.conf"); 
 

@@ -11,7 +11,7 @@ use strict;
 use warnings;
 
 our $PACK    = __PACKAGE__;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 ### @ISA     = qw( );
 
 use IO::Socket;                          # Don't use POE: Socket is faster
@@ -55,12 +55,21 @@ sub send
     $msg->addRemoteRouteTo( $host, $port, "sync" );  # for immediate reply
  ###$msg->addRemoteRouteTo( $host, $port, "async");  # delayed or no reply
 
-    my $response = $msg->route();                    # route/get response
+    my($response) = $msg->route();                   # route/get response
 
+    unless (ref $response and $response->can('stat')) {
+	die "Internal Error: Invalid response object: '$response'";
+    }
     my $status = $response->stat();                  # check status
     #-------------------------------------------------------------------
 
+    # In this example, for "sync" routing, "$respBody" will be
+    # either an error or whatever was returned from the server:
     my $respBody = ($status ? $response->err() : $response->body() );
+
+  ### In this example, for "async" routing, "$respBody" will be 
+  ### either an error or the text "message sent successfully":
+  # my $respBody = ($response->err() ? $response->err() : $response->body() );
 
     # print $msg->dump();                       # DEBUG
     # print $response->dump();                  # DEBUG
@@ -163,7 +172,7 @@ Chris Cobb, E<lt>no spam [at] ccobb [dot] netE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005-2007 by Chris Cobb. All rights reserved.
+Copyright (c) 2005-2010 by Chris Cobb. All rights reserved.
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 
